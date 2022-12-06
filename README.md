@@ -1,2 +1,2 @@
-# FP-PBO
-Final Project PBO - Space Invader
+# FP PBO - Space Invader
+Space Invader
