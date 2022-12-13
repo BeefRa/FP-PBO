@@ -1,11 +1,23 @@
 package application;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.IntStream;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.scene.Cursor;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.stream.IntStream;
 import javafx.animation.KeyFrame;
@@ -14,6 +26,13 @@ import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.StackPane;
+=======
+import javafx.util.Duration;
+
+import javafx.animation.Timeline;
+import javafx.scene.Cursor;
+import javafx.scene.canvas.GraphicsContext;
+>>>>>>> ded4a4bda4c31f400cfc55de0f0fe21da4859825
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -99,6 +118,10 @@ public class SpaceInvaders extends Application{
 			explosionStep = -1;
 		}
 		
+<<<<<<< HEAD
+=======
+		//run graphics
+>>>>>>> ded4a4bda4c31f400cfc55de0f0fe21da4859825
 		private void run(GraphicsContext gc) {
 			gc.setFill(Color.grayRgb(20));
 			gc.fillRect(0, 0, WIDTH, HEIGHT);
@@ -156,7 +179,11 @@ public class SpaceInvaders extends Application{
 					univ.remove(i);
 			}
 		}
+<<<<<<< HEAD
 
+=======
+		//start
+>>>>>>> ded4a4bda4c31f400cfc55de0f0fe21da4859825
 		public void start(Stage stage) throws Exception{
 			Canvas canvas = new Canvas(WIDTH, HEIGHT);
 			gc = canvas.getGraphicsContext2D();
