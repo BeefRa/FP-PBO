@@ -57,8 +57,17 @@ public class SpaceInvaders extends Application{
 	List<Shot> shots;
 	List<Universe> univ;
 	List<Bomb> Bombs;
+	
+	private double mouseX;
+    	private int score;
 
-	@Override public void start(Stage arg0) throws Exception {
+	private void setup() {
+		univ = new ArrayList<>();
+		shots = new ArrayList<>();
+		Bombs = new ArrayList<>();
+		player = new Rocket(WIDTH / 2, HEIGHT - PLAYER_SIZE, PLAYER_SIZE, PLAYER_IMG);
+		score = 0;
+		IntStream.range(0, MAX_BOMBS).mapToObj(i -> this.newBomb()).forEach(Bombs::add);
 	}
 	
 	public class Rocket {
@@ -106,6 +115,91 @@ public class SpaceInvaders extends Application{
 			exploding = true;
 			explosionStep = -1;
 		}
+	}
+		
+	public class Bomb extends Rocket{
+		int SPEED = (score/5)+2;
+
+		public Bomb(int posX, int posY, int size, Image image) {
+		    super(posX, posY, size, image);
+			//TODO Auto-generated constructor stub
+		}
+
+		public void update() {
+		    super.update();
+		    if(!exploding && !destroyed) posY += SPEED;
+		    if(posY > HEIGHT) destroyed = true;
+		}
+    }
+
+    public class Shot {
+        public boolean toRemove;
+
+        int posX, posY = 10;
+        int speed = 30;
+        static final int size = 6;
+        public Shot(int posX, int posY) {
+            this.posX = posX;
+            this.posY = posY;
+        }
+
+        public void update() {
+            posY -= speed;
+        }
+
+        public void draw() {
+            gc.setFill(Color.RED);
+            if(score >= 50 && score <= 70 || score >= 120) {
+                gc.setFill(Color.YELLOWGREEN);
+                speed = 50;
+                gc.fillRect(posX-5, posY-10, size+20, size+30);
+            }
+            else {
+                gc.fillOval(posX, posY, size, size);
+            }
+        }
+
+        public boolean collide(Rocket rocket) {
+            int distance = distance(this.posX + size /2, this.posY + size /2,
+                    rocket.posX + rocket.size /2, rocket.posY + rocket.size /2);
+            return distance < rocket.size /2 + size /2;
+        }
+    }
+
+    public class Universe {
+        int posX, posY;
+        private int h, w, r, g, b;
+        private double opacity;
+
+        public Universe() {
+            posX = RAND.nextInt(WIDTH);
+            posY = 0;
+            w = RAND.nextInt(5) +1;
+            h = RAND.nextInt(5) +1;
+            r = RAND.nextInt(100) +150;
+            g = RAND.nextInt(100) +150;
+            b = RAND.nextInt(100) +150;
+            opacity = RAND.nextFloat();
+            if(opacity < 0) opacity *= -1;
+            if(opacity > 0.5) opacity = 0.5;
+        }
+
+        public void draw() {
+            if(opacity > 0.8) opacity -= 0.01;
+            if(opacity < 0.1) opacity += 0.01;
+            gc.setFill(Color.rgb(r, g, b, opacity));
+            gc.fillOval(posX, posY, w, b);
+            posY += 20;
+        }
+    }
+
+    Bomb newBomb() {
+        return new Bomb(50 + RAND.nextInt(WIDTH - 100), 0, PLAYER_SIZE, BOMBS_IMG[RAND.nextInt(BOMBS_IMG.length)]);
+    }
+
+    int distance(int x1, int y1, int x2, int y2) {
+        return (int) Math.sqrt(Math.pow(x1-x2, 2) + Math.pow((y1-y2), 2));
+    }
 		
 		//run graphics
 		private void run(GraphicsContext gc) {
