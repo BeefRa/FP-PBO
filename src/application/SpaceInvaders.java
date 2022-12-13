@@ -1,11 +1,5 @@
 package application;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.IntStream;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -57,28 +51,28 @@ public class SpaceInvaders extends Application{
 	List<Universe> univ;
 	List<Bomb> Bombs;
 
-    private double mouseX;
-    private int score;
+    // private double mouseX;
+    // private int score;
 
 	@Override public void start(Stage stage) throws Exception {
-        Canvas canvas = new Canvas(WIDTH, HEIGHT);	
-		gc = canvas.getGraphicsContext2D();
-		Timeline timeline = new Timeline(new KeyFrame(Duration.Millis(100), e -> run(gc)));
-		timeline.setCycleCount(Timeline.INDEFINITE);
-		timeline.play();
-		canvas.setCursor(Cursor.MOVE);
-		canvas.setOnMouseMoved(e -> mouseX = e.getX());
-		canvas.setOnMouseClicked(e -> {
-			if(shots.size() < MAX_SHOTS) shots.add(player.shoot());
-			if(gameOver) { 
-				gameOver = false;
-				setup();
-			}
-		});
-		setup();
-		stage.setScene(new Scene(new StackPane(canvas)));
-		stage.setTitle("Space Invaders");
-		stage.show();
+        // Canvas canvas = new Canvas(WIDTH, HEIGHT);	
+		// gc = canvas.getGraphicsContext2D();
+		// Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100), e -> run(gc)));
+		// timeline.setCycleCount(Timeline.INDEFINITE);
+		// timeline.play();
+		// canvas.setCursor(Cursor.MOVE);
+		// canvas.setOnMouseMoved(e -> mouseX = e.getX());
+		// canvas.setOnMouseClicked(e -> {
+		// 	if(shots.size() < MAX_SHOTS) shots.add(player.shoot());
+		// 	if(gameOver) { 
+		// 		gameOver = false;
+		// 		setup();
+		// 	}
+		// });
+		// setup();
+		// stage.setScene(new Scene(new StackPane(canvas)));
+		// stage.setTitle("Space Invaders");
+		// stage.show();
     }
 
     private void setup() {
@@ -90,64 +84,64 @@ public class SpaceInvaders extends Application{
 		IntStream.range(0, MAX_BOMBS).mapToObj(i -> this.newBomb()).forEach(Bombs::add);
 	}
 
-    private void run(GraphicsContext gc) {
-        gc.setFill(Color.grayRgb(20));
-        gc.fillRect(0, 0, WIDTH, HEIGHT);
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.setFont(Font.font(20));
-        gc.setFill(Color.WHITE);
-        gc.fillText("Score: " + score, 60, 20);
+    // private void run(GraphicsContext gc) {
+    //     gc.setFill(Color.grayRgb(20));
+    //     gc.fillRect(0, 0, WIDTH, HEIGHT);
+    //     gc.setTextAlign(TextAlignment.CENTER);
+    //     gc.setFont(Font.font(20));
+    //     gc.setFill(Color.WHITE);
+    //     gc.fillText("Score: " + score, 60, 20);
     
-        if(gameOver) {
-            gc.setFont(Font.font(35));
-            gc.setFill(Color.YELLOW);
-            gc.fillText("Game Over \n Your Score is: " + score + "\n Click to play again", WIDTH /2, HEIGHT /2.5);
-        }
+    //     if(gameOver) {
+    //         gc.setFont(Font.font(35));
+    //         gc.setFill(Color.YELLOW);
+    //         gc.fillText("Game Over \n Your Score is: " + score + "\n Click to play again", WIDTH /2, HEIGHT /2.5);
+    //     }
 
-        univ.forEach(Universe :: draw);
+    //     univ.forEach(Universe :: draw);
 
-        player.update();
-        player.draw();
-        player.posX = (int) mouseX;
+    //     player.update();
+    //     player.draw();
+    //     player.posX = (int) mouseX;
 
-        Bombs.stream().peek(Rocket :: update).peek(Rocket :: draw).forEach(e -> {
-            if(player.collide(e) && !player.exploding) {
-                player.explode();
-            }
-        });
+    //     Bombs.stream().peek(Rocket :: update).peek(Rocket :: draw).forEach(e -> {
+    //         if(player.collide(e) && !player.exploding) {
+    //             player.explode();
+    //         }
+    //     });
 
-        for (int i = shots.size() - 1; i >= 0; i--) {
-            Shot shot = shots.get(i);
-            if(shot.posY < 0 || shot.toRemove)  { 
-				shots.remove(i);
-				continue;
-			}
-			shot.update();
-			shot.draw();
-			for (Bomb bomb : Bombs) {
-				if(shot.collide(bomb) && !bomb.exploding) {
-					score++;
-					bomb.explode();
-					shot.toRemove = true;
-				}
-			}
-        }
+    //     for (int i = shots.size() - 1; i >= 0; i--) {
+    //         Shot shot = shots.get(i);
+    //         if(shot.posY < 0 || shot.toRemove)  { 
+	// 			shots.remove(i);
+	// 			continue;
+	// 		}
+	// 		shot.update();
+	// 		shot.draw();
+	// 		for (Bomb bomb : Bombs) {
+	// 			if(shot.collide(bomb) && !bomb.exploding) {
+	// 				score++;
+	// 				bomb.explode();
+	// 				shot.toRemove = true;
+	// 			}
+	// 		}
+    //     }
 
-        for (int i = Bombs.size() - 1; i >= 0; i--){  
-			if(Bombs.get(i).destroyed)  {
-				Bombs.set(i, newBomb());
-			}
-		}
+    //     for (int i = Bombs.size() - 1; i >= 0; i--){  
+	// 		if(Bombs.get(i).destroyed)  {
+	// 			Bombs.set(i, newBomb());
+	// 		}
+	// 	}
 	
-		gameOver = player.destroyed;
-		if(RAND.nextInt(10) > 2) {
-			univ.add(new Universe());
-		}
-		for (int i = 0; i < univ.size(); i++) {
-			if(univ.get(i).posY > HEIGHT)
-				univ.remove(i);
-		}
-    }
+	// 	gameOver = player.destroyed;
+	// 	if(RAND.nextInt(10) > 2) {
+	// 		univ.add(new Universe());
+	// 	}
+	// 	for (int i = 0; i < univ.size(); i++) {
+	// 		if(univ.get(i).posY > HEIGHT)
+	// 			univ.remove(i);
+	// 	}
+    // }
 	
 	public class Rocket {
 		int posX;
@@ -183,11 +177,11 @@ public class SpaceInvaders extends Application{
 			}
 		}
 		
-		public boolean collide(Rocket other) {
+		public boolean collide(Rocket rocket) {
 			int d = distance(this.posX + size / 2, this.posY + size / 2, 
-					other.posX + other.size / 2, other.posY + other.size / 2);
+			rocket.posX + rocket.size / 2, rocket.posY + rocket.size / 2);
 			
-			return d < other.size / 2 + this.size / 2;
+			return d < rocket.size / 2 + this.size / 2;
 		}
 		
 		public void explode() {
@@ -280,7 +274,7 @@ public class SpaceInvaders extends Application{
         return (int) Math.sqrt(Math.pow(x1-x2, 2) + Math.pow((y1-y2), 2));
     }
 
-    public static void main(String[] args) {
-		launch(args);
-	}
+    // public static void main(String[] args) {
+	// 	launch(args);
+	// }
 }
