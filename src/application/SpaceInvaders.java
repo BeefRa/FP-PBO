@@ -17,48 +17,54 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
-import javafx.scene.text.Font;
 
-public class SpaceInvaders extends Application{
+public class SpaceInvaders extends Application {
 	private static final Random RAND = new Random();
 	private static final int WIDTH = 800;
 	private static final int HEIGHT = 600;
 	private static final int PLAYER_SIZE = 60;
 	
-	static final Image PLAYER_IMG = new Image("file:src/application/img/pemain.png");
-	static final Image EXPLOSION_IMG = new Image("file:src/application/img/ledakan.png");
-	
 	static final int EXPLOSION_W = 128;
+	static final int EXPLOSION_H = 128;
 	static final int EXPLOSION_ROWS = 3;
 	static final int EXPLOSION_COL = 3;
-	static final int EXPLOSION_H = 128;
 	static final int EXPLOSION_STEPS = 15;
 	
+	static final Image PLAYER_IMG = new Image("file:src/application/img/Player.png");
+	static final Image EXPLOSION_IMG = new Image("file:src/application/img/explosion.png");
 	static final Image BOMBS_IMG[] = {
-		new Image("file:src/application/img/bom1.png"),
-		new Image("file:src/application/img/bom2.png"),
-		new Image("file:src/application/img/bom3.png")
+		new Image("file:src/application/img/1.png"),
+		new Image("file:src/application/img/2.png"),
+		new Image("file:src/application/img/3.png"),
+		new Image("file:src/application/img/4.png"),
+		new Image("file:src/application/img/5.png"),
+		new Image("file:src/application/img/6.png"),
+		new Image("file:src/application/img/7.png"),
+		new Image("file:src/application/img/8.png"),
+		new Image("file:src/application/img/9.png"),
+		new Image("file:src/application/img/10.png")
 	};
 	
-	final int MAX_BOMBS = 10;
+	final int MAX_BOMBS = 5;
 	final int MAX_SHOTS = MAX_BOMBS * 2;
+	boolean gameS = false;
 	boolean gameOver = false;
 	private GraphicsContext gc;
 	
 	Rocket player;
 	List<Shot> shots;
 	List<Universe> univ;
-	List<Bomb> Bombs;
+	List<Bomb> bombs;
 
     private double mouseX;
     private int score;
 
+//	mulai permainan
 	@Override public void start(Stage stage) throws Exception {
         Canvas canvas = new Canvas(WIDTH, HEIGHT);	
 		gc = canvas.getGraphicsContext2D();
-		Timeline timeline = new Timeline(new KeyFrame(Duration.Millis(100), e -> run(gc)));
+		Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100), e -> run(gc)));
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		timeline.play();
 		canvas.setCursor(Cursor.MOVE);
@@ -76,15 +82,17 @@ public class SpaceInvaders extends Application{
 		stage.show();
     }
 
+//	pengaturan awal permainan
     private void setup() {
 		univ = new ArrayList<>();
 		shots = new ArrayList<>();
-		Bombs = new ArrayList<>();
+		bombs = new ArrayList<>();
 		player = new Rocket(WIDTH / 2, HEIGHT - PLAYER_SIZE, PLAYER_SIZE, PLAYER_IMG);
 		score = 0;
-		IntStream.range(0, MAX_BOMBS).mapToObj(i -> this.newBomb()).forEach(Bombs::add);
+		IntStream.range(0, MAX_BOMBS).mapToObj(i -> this.newBomb()).forEach(bombs::add);
 	}
 
+//	program dinamis per frame
     private void run(GraphicsContext gc) {
         gc.setFill(Color.grayRgb(20));
         gc.fillRect(0, 0, WIDTH, HEIGHT);
@@ -103,9 +111,9 @@ public class SpaceInvaders extends Application{
 
         player.update();
         player.draw();
-        player.posX = (int) mouseX;
+        player.posX = (int) mouseX - 30;
 
-        Bombs.stream().peek(Rocket :: update).peek(Rocket :: draw).forEach(e -> {
+        bombs.stream().peek(Rocket :: update).peek(Rocket :: draw).forEach(e -> {
             if(player.collide(e) && !player.exploding) {
                 player.explode();
             }
@@ -119,7 +127,7 @@ public class SpaceInvaders extends Application{
 			}
 			shot.update();
 			shot.draw();
-			for (Bomb bomb : Bombs) {
+			for (Bomb bomb : bombs) {
 				if(shot.collide(bomb) && !bomb.exploding) {
 					score++;
 					bomb.explode();
@@ -128,9 +136,9 @@ public class SpaceInvaders extends Application{
 			}
         }
 
-        for (int i = Bombs.size() - 1; i >= 0; i--){  
-			if(Bombs.get(i).destroyed)  {
-				Bombs.set(i, newBomb());
+        for (int i = bombs.size() - 1; i >= 0; i--){  
+			if(bombs.get(i).destroyed)  {
+				bombs.set(i, newBomb());
 			}
 		}
 	
@@ -144,6 +152,7 @@ public class SpaceInvaders extends Application{
 		}
     }
 	
+//	class untuk object pemain
 	public class Rocket {
 		int posX;
 		int posY;
@@ -189,94 +198,14 @@ public class SpaceInvaders extends Application{
 			exploding = true;
 			explosionStep = -1;
 		}
-		
-		//run graphics
-		private void run(GraphicsContext gc) {
-			gc.setFill(Color.grayRgb(20));
-			gc.fillRect(0, 0, WIDTH, HEIGHT);
-			gc.setTextAlign(TextAlignment.CENTER);
-			gc.setFont(Font.font(20));
-			gc.setFill(Color.WHITE);
-			gc.fillText("Score: " + score, 60, 20);
-			
-			if(gameOver) {
-				gc.setFont(Font.font(35));
-				gc.setFill(Color.YELLOW);
-				gc.fillText("GameOver \n Your Score is: " + score + "\nClick to play again", WIDTH/2, HEIGHT/2.5);
-			}
-			univ.forEach(Universe::draw);
-			
-			player.update();
-			player.draw();
-			player.posX= (int) mouseX;
-			
-			Bombs.stream().peek(Rocket::update).peek(Rocket::draw).forEach(e ->{
-				if(player.colide(e) && !player.exploding) {
-					player.explode();
-				}
-			});
-			
-			for(int i = shots.size() - 1; i >= 0 ; i--) {
-				Shot shot = shots.get(i);
-				if(shot.posY <0 || shot.toRemove) {
-					shots.remove(i);
-					continue;
-				}
-				shot.update();
-				shot.draw();
-				for(Bomb bomb : Bombs) {
-					if(shot.colide(bomb) && !bomb.exploding) {
-						score++;
-						bomb.explode();
-						shot.toRemove= true;
-					}
-				}
-			}
-			
-			for(int i = Bombs.size() - 1; i>=0; i--) {
-				if(Bombs.get(i).destroyed) {
-					Bombs.set(i,newBomb());
-				}
-			}
-			
-			gameOver = player.destroyed;
-			if(RAND.nextInt(10)>2) {
-				univ.add(new Univearse());
-			}
-			for(int i = 0; i< univ.size(); i++) {
-				if(univ.get(i).posY > HEIGHT)
-					univ.remove(i);
-			}
-		}
-		//start
-		public void start(Stage stage) throws Exception{
-			Canvas canvas = new Canvas(WIDTH, HEIGHT);
-			gc = canvas.getGraphicsContext2D();
-			Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100), e ->run(gc)));
-			timeline.setCycleCount(Timeline.INDEFINITE);
-			timeline.play();
-			canvas.setCursor(Cursor.MOVE);
-			canvas.setOnMouseMoved(e -> mouseX = e.getX());
-			canvas.setOnMouseClicked(e ->{
-				if(shots.size() < MAX_SHOTS) shots.add(player.shoot());
-				if(gameOver) {
-					gameOver = false;
-					setup();
-				}
-			});
-			setup();
-			stage.setScene(new Scene (new StackPane(canvas)));
-			stage.setTitle("Space Invaders");
-			stage.show();	
-		}
 	}
 
+//	class untuk object musuh
     public class Bomb extends Rocket{
         int SPEED = (score/5)+2;
 
         public Bomb(int posX, int posY, int size, Image image) {
             super(posX, posY, size, image);
-            //TODO Auto-generated constructor stub
         }
 
         public void update() {
@@ -286,6 +215,7 @@ public class SpaceInvaders extends Application{
         }
     }
 
+//	class untuk object amunisi
     public class Shot {
         public boolean toRemove;
 
@@ -320,16 +250,16 @@ public class SpaceInvaders extends Application{
         }
     }
 
+//	class untuk object latar belakang
     public class Universe {
         int posX, posY;
-        private int h, w, r, g, b;
+        private int w, r, g, b;
         private double opacity;
 
         public Universe() {
             posX = RAND.nextInt(WIDTH);
             posY = 0;
             w = RAND.nextInt(5) +1;
-            h = RAND.nextInt(5) +1;
             r = RAND.nextInt(100) +150;
             g = RAND.nextInt(100) +150;
             b = RAND.nextInt(100) +150;
@@ -354,8 +284,8 @@ public class SpaceInvaders extends Application{
     int distance(int x1, int y1, int x2, int y2) {
         return (int) Math.sqrt(Math.pow(x1-x2, 2) + Math.pow((y1-y2), 2));
     }
-
-    public static void main(String[] args) {
-		launch(args);
-	}
+    
+    public static void main(String[]args) {
+    	launch();
+    }
 }
