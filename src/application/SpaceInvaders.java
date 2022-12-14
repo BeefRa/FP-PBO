@@ -18,6 +18,12 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class SpaceInvaders extends Application {
 	private static final Random RAND = new Random();
@@ -59,6 +65,9 @@ public class SpaceInvaders extends Application {
 
     private double mouseX;
     private int score;
+    private int skorTinggi;
+    private int batasTulisFile = 1;
+    private File file = new File("skor_tinggi.txt");
 
 //	mulai permainan
 	@Override public void start(Stage stage) throws Exception {
@@ -90,21 +99,65 @@ public class SpaceInvaders extends Application {
 		player = new Rocket(WIDTH / 2, HEIGHT - PLAYER_SIZE, PLAYER_SIZE, PLAYER_IMG);
 		score = 0;
 		IntStream.range(0, MAX_BOMBS).mapToObj(i -> this.newBomb()).forEach(bombs::add);
+		batasTulisFile = 1;
+        skorTinggi = 0;
+        
+//      baca file skor_tinggi
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line = reader.readLine();
+            while (line != null) {
+                try {
+                    int score = Integer.parseInt(line.trim());
+                    if (score > skorTinggi) skorTinggi = score;
+                } catch (NumberFormatException e1) {
+                    System.err.println("Mengabaikan skor tidak sah: " + line);
+                }
+                line = reader.readLine();
+            }
+            reader.close();
+
+        } catch (IOException ex) {
+            System.err.println("Terjadi galat saat membaca skor dari file");
+        }
 	}
 
 //	program dinamis per frame
     private void run(GraphicsContext gc) {
+//    	skor permainan berlangsung
         gc.setFill(Color.grayRgb(20));
         gc.fillRect(0, 0, WIDTH, HEIGHT);
-        gc.setTextAlign(TextAlignment.CENTER);
+        gc.setTextAlign(TextAlignment.LEFT);
         gc.setFont(Font.font(20));
         gc.setFill(Color.WHITE);
-        gc.fillText("Score: " + score, 60, 20);
-    
+        gc.fillText("Score: " + score, 5, 20);
+        
+//      skor tertinggi
+        gc.setFont(Font.font(20));
+        gc.setFill(Color.CYAN);
+        gc.fillText("Skor Tinggi: " + skorTinggi, 5, 40);
+//    
         if(gameOver) {
+        	gc.setTextAlign(TextAlignment.CENTER);
             gc.setFont(Font.font(35));
             gc.setFill(Color.YELLOW);
-            gc.fillText("Game Over \n Your Score is: " + score + "\n Click to play again", WIDTH /2, HEIGHT /2.5);
+            gc.fillText("Permainan berakhir \n Skor anda: " + score + "\n Skor tinggi: " + skorTinggi + 
+            		" \n Klik untuk main lagi", WIDTH/2, HEIGHT/2.5);
+            
+//          tulis skor ke file setiap kali mati
+            if (batasTulisFile == 1) {
+                try {
+                    BufferedWriter output = new BufferedWriter(new FileWriter(file, true));
+                    output.newLine();
+                    output.append("" + score);
+                    output.close();
+
+                } catch (IOException ex1) {
+                    System.out.printf("Terjadi galat saat menulis skor ke file: %s\n", ex1);
+                }
+                
+                batasTulisFile--;
+            }
         }
 
         univ.forEach(Universe :: draw);
