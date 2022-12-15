@@ -216,6 +216,7 @@ public class SpaceInvaders extends Application{
 			gc.setFont(Font.font(20));
 			gc.setFill(Color.WHITE);
 			gc.fillText("Score: " + score, 60, 20);
+			gc.fillText("Level: "+ level, 60, 40);
 			
 			if(gameOver) {
 				gc.setFont(Font.font(35));
@@ -247,6 +248,10 @@ public class SpaceInvaders extends Application{
 						score++;
 						bomb.explode();
 						shot.toRemove= true;
+						
+						if(score % 20 == 0){
+						level++;
+						}
 					}
 				}
 			}
