@@ -40,9 +40,7 @@ public class SpaceInvaders extends Application {
 	static final int EXPLOSION_ROWS = 3;
 	static final int EXPLOSION_COL = 3;
 	static final int EXPLOSION_STEPS = 15;
-	
-	static final Image PLAYER_IMG = new Image("file:src/application/img/Player.png");
-	static final Image EXPLOSION_IMG = new Image("file:src/application/img/explosion.png");
+
 	static final Image BOMBS_IMG[] = {
 		new Image("file:src/application/img/1.png"),
 		new Image("file:src/application/img/2.png"),
