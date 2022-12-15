@@ -33,8 +33,8 @@ public class SpaceInvaders extends Application{
 	private static final int HEIGHT = 600;
 	private static final int PLAYER_SIZE = 60;
 	
-	static final Image PLAYER_IMG = new Image("file:src/application/img/pemain.png");
-	static final Image EXPLOSION_IMG = new Image("file:src/application/img/ledakan.png");
+	static final Image PLAYER_IMG = new Image("file:src/application/img/player.png");
+	static final Image EXPLOSION_IMG = new Image("file:src/application/img/ded.png");
 	
 	static final int EXPLOSION_W = 128;
 	static final int EXPLOSION_ROWS = 3;
@@ -43,9 +43,16 @@ public class SpaceInvaders extends Application{
 	static final int EXPLOSION_STEPS = 15;
 	
 	static final Image BOMBS_IMG[] = {
-		new Image("file:src/application/img/bom1.png"),
-		new Image("file:src/application/img/bom2.png"),
-		new Image("file:src/application/img/bom3.png")
+		new Image("file:src/application/img/1.png"),
+		new Image("file:src/application/img/2.png"),
+		new Image("file:src/application/img/3.png"),
+		new Image("file:src/application/img/4.png"),
+		new Image("file:src/application/img/5.png"),
+		new Image("file:src/application/img/6.png"),
+		new Image("file:src/application/img/7.png"),
+		new Image("file:src/application/img/8.png"),
+		new Image("file:src/application/img/9.png"),
+		new Image("file:src/application/img/10.png")
 	};
 	
 	final int MAX_BOMBS = 10;
@@ -201,9 +208,9 @@ public class SpaceInvaders extends Application{
         return (int) Math.sqrt(Math.pow(x1-x2, 2) + Math.pow((y1-y2), 2));
     }
 		
-		//run graphics
+     		//run graphics
 		private void run(GraphicsContext gc) {
-			gc.setFill(Color.grayRgb(20));
+			gc.setFill(Color.ROYALBLUE);
 			gc.fillRect(0, 0, WIDTH, HEIGHT);
 			gc.setTextAlign(TextAlignment.CENTER);
 			gc.setFont(Font.font(20));
@@ -277,7 +284,7 @@ public class SpaceInvaders extends Application{
 			});
 			setup();
 			stage.setScene(new Scene (new StackPane(canvas)));
-			stage.setTitle("Space Invaders");
+			stage.setTitle("Underwater Invaders");
 			stage.show();	
 		}
 	}
