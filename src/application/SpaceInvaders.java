@@ -54,11 +54,11 @@ public class SpaceInvaders extends Application {
 	
 	final int MAX_BOMBS = 5;
 	final int MAX_SHOTS = MAX_BOMBS * 2;
-	boolean gameS = false;
 	boolean gameOver = false;
 	private GraphicsContext gc;
 	
 	Rocket player;
+	Bomb bos;
 	List<Shot> shots;
 	List<Universe> univ;
 	List<Bomb> bombs;
@@ -66,7 +66,8 @@ public class SpaceInvaders extends Application {
     private double mouseX;
     private int score;
     private int skorTinggi;
-    private int batasTulisFile = 1;
+    private int batas;
+    private int scoreThen;
     private File file = new File("skor_tinggi.txt");
 
 //	mulai permainan
@@ -99,7 +100,8 @@ public class SpaceInvaders extends Application {
 		player = new Rocket(WIDTH / 2, HEIGHT - PLAYER_SIZE, PLAYER_SIZE, PLAYER_IMG);
 		score = 0;
 		IntStream.range(0, MAX_BOMBS).mapToObj(i -> this.newBomb()).forEach(bombs::add);
-		batasTulisFile = 1;
+		batas = 1;
+		scoreThen = 0;
         skorTinggi = 0;
         
 //      baca file skor_tinggi
@@ -145,7 +147,7 @@ public class SpaceInvaders extends Application {
             		" \n Klik untuk main lagi", WIDTH/2, HEIGHT/2.5);
             
 //          tulis skor ke file setiap kali mati
-            if (batasTulisFile == 1) {
+            if (batas == 1) {
                 try {
                     BufferedWriter output = new BufferedWriter(new FileWriter(file, true));
                     output.newLine();
@@ -156,7 +158,7 @@ public class SpaceInvaders extends Application {
                     System.out.printf("Terjadi galat saat menulis skor ke file: %s\n", ex1);
                 }
                 
-                batasTulisFile--;
+                batas--;
             }
         }
 
@@ -178,8 +180,10 @@ public class SpaceInvaders extends Application {
 				shots.remove(i);
 				continue;
 			}
+            
 			shot.update();
 			shot.draw();
+			
 			for (Bomb bomb : bombs) {
 				if(shot.collide(bomb) && !bomb.exploding) {
 					score++;
@@ -187,9 +191,17 @@ public class SpaceInvaders extends Application {
 					shot.toRemove = true;
 				}
 			}
+			
+			if (bos != null) {
+				if(shot.collide(bos) && !bos.exploding) {
+					score += 3;
+					bos.explode();
+					shot.toRemove = true;
+				}
+			}
         }
 
-        for (int i = bombs.size() - 1; i >= 0; i--){  
+        for (int i = bombs.size() - 1; i >= 0; i--){
 			if(bombs.get(i).destroyed)  {
 				bombs.set(i, newBomb());
 			}
@@ -199,9 +211,25 @@ public class SpaceInvaders extends Application {
 		if(RAND.nextInt(10) > 2) {
 			univ.add(new Universe());
 		}
+		
 		for (int i = 0; i < univ.size(); i++) {
 			if(univ.get(i).posY > HEIGHT)
 				univ.remove(i);
+		}
+
+		if (score > 0 && score % 10 == 0) {
+			if (!(scoreThen == score)) {
+				bos = newBoss();
+				scoreThen = score;
+			}
+		}
+		
+		if (bos != null) {
+			if(player.collide(bos) && !player.exploding) {
+                player.explode();
+            }
+			bos.update();
+			bos.draw();
 		}
     }
 	
@@ -255,15 +283,16 @@ public class SpaceInvaders extends Application {
 
 //	class untuk object musuh
     public class Bomb extends Rocket{
-        int SPEED = (score/5)+2;
+        int kecepatanMusuh;
 
-        public Bomb(int posX, int posY, int size, Image image) {
+        public Bomb(int posX, int posY, int size, Image image, int kecepatan) {
             super(posX, posY, size, image);
+            kecepatanMusuh = kecepatan;
         }
 
         public void update() {
             super.update();
-            if(!exploding && !destroyed) posY += SPEED;
+            if(!exploding && !destroyed) posY += kecepatanMusuh;
             if(posY > HEIGHT) destroyed = true;
         }
     }
@@ -331,7 +360,11 @@ public class SpaceInvaders extends Application {
     }
 
     Bomb newBomb() {
-        return new Bomb(50 + RAND.nextInt(WIDTH - 100), 0, PLAYER_SIZE, BOMBS_IMG[RAND.nextInt(BOMBS_IMG.length)]);
+        return new Bomb(50 + RAND.nextInt(WIDTH - 100), 0, PLAYER_SIZE, BOMBS_IMG[RAND.nextInt(BOMBS_IMG.length)], (score/5)+2);
+    }
+    
+    Bomb newBoss() {
+        return new Bomb(50 + RAND.nextInt(WIDTH - 100), 0, PLAYER_SIZE, PLAYER_IMG, 20);
     }
 
     int distance(int x1, int y1, int x2, int y2) {
