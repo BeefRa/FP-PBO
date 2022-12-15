@@ -316,6 +316,7 @@ public class SpaceInvaders extends Application {
 //	class untuk object amunisi
     public class Shot {
         public boolean toRemove;
+	Image img=new Image("file:src/application/img/net.png");
 
         int posX, posY = 10;
         int speed = 30;
@@ -330,16 +331,14 @@ public class SpaceInvaders extends Application {
         }
 
         public void draw() {
-            gc.setFill(Color.RED);
-            if(score >= 50 && score <= 70 || score >= 120) {
-                gc.setFill(Color.YELLOWGREEN);
-                speed = 50;
-                gc.fillRect(posX-5, posY-10, size+20, size+30);
-            }
-            else {
-                gc.fillOval(posX, posY, size, size);
-            }
-        }
+		if (score >=50 && score<=70 || score>=120) {
+			speed = 50;
+			gc.drawImage(img, posX, posY,size+40,size+40);
+		}
+		else {
+			gc.drawImage(img, posX, posY,size+25,size+25);
+		}
+	}
 
         public boolean collide(Rocket rocket) {
             int distance = distance(this.posX + size /2, this.posY + size /2,
